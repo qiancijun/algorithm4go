@@ -1,0 +1,24 @@
+package main
+
+import (
+	"bufio"
+	. "fmt"
+	"os"
+)
+
+const N int = 1e5 + 10
+
+var n, m int
+
+func main() {
+	in := bufio.NewReader(os.Stdin)
+	out := bufio.NewWriter(os.Stdout)
+	defer out.Flush()
+
+	
+
+}
+
+func min(a, b int) int { if a > b { return b }; return a }
+func max(a, b int) int { if a < b { return b }; return a }
+func abs(v int) int { if v > 0 { return v }; return -v }
