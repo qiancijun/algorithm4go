@@ -2,27 +2,64 @@ package main
 
 import (
 	"bufio"
-	"container/heap"
 	. "fmt"
 	"os"
 )
 
 const (
-	N int = 150010
-	INF int = 0x3f3f3f3f
+	N int = 1e5 + 10
 )
 
-type edge struct { to, w int }
-type hp []edge
-
-func (h hp) Len() int              { return len(h) }
-func (h hp) Less(i, j int) bool    { return h[i].w < h[j].w }
-func (h hp) Swap(i, j int)         { h[i], h[j] = h[j], h[i] }
-func (h *hp) Push(v interface{})   { *h = append(*h, v.(edge)) }
-func (h *hp) Pop() (v interface{}) { a := *h; *h, v = a[:len(a)-1], a[len(a)-1]; return }
-
+var a [N]int
 var n, m int
-var g [N][]edge
+
+type node struct { l, r, val int }
+type seg []node
+
+func (t seg) pushup(u int) {
+	t[u].val = (t[u<<1].val + t[u<<1|1].val)
+}
+
+func (t seg) build(u, l, r int) {
+	if l == r {
+		t[u] = node{l, r, a[l]}
+	} else {
+		t[u].l, t[u].r = l, r
+		m := (l + r) >> 1
+		t.build(u<<1, l, m)
+		t.build(u<<1|1, m+1, r)
+		t.pushup(u)
+	}
+}
+
+func (t seg) query(u, l, r int) int {
+	if t[u].l >= l && t[u].r <= r {
+		return t[u].val
+	}
+	m := (t[u].l + t[u].r) >> 1
+	ret := 0
+	if l <= m {
+		ret = t.query(u<<1, l, r)
+	}
+	if m < r {
+		ret += t.query(u<<1|1, l, r)
+	}
+	return ret
+}
+
+func (t seg) update(u, x, v int) {
+	if t[u].l == t[u].r {
+		t[u].val += v
+	} else {
+		m := (t[u].l + t[u].r) >> 1
+		if x <= m {
+			t.update(u<<1, x, v)
+		} else {
+			t.update(u<<1|1, x, v)
+		}
+		t.pushup(u)
+	}
+}
 
 func main() {
 	in := bufio.NewReader(os.Stdin)
@@ -30,38 +67,23 @@ func main() {
 	defer out.Flush()
 
 	Fscan(in, &n, &m)
-	for i := 0; i < m; i++ {
-		var u, v, w int
-		Fscan(in, &u, &v, &w)
-		g[u] = append(g[u], edge{v, w})
+	for i := 1; i <= n; i++ {
+		Fscan(in, &a[i])
 	}
 
-	dist := make([]int, n+1)
-	for i := range dist {
-		dist[i] = INF
-	}
-	dist[1] = 0
-	hp := hp{{1, 0}}
+	t := make(seg, 4 * N)
+	t.build(1, 1, n)
 
-	for len(hp) > 0 {
-		cur := heap.Pop(&hp).(edge)
-		v, d := cur.to, cur.w
-		if dist[v] < d {
-			continue
-		}
-		for _, e := range g[v] {
-			w := e.to
-			if newDis := d + e.w; newDis < dist[w] {
-				dist[w] = newDis
-				heap.Push(&hp, edge{w, newDis})
-			}
+	for ; m > 0; m-- {
+		var k, a, b int
+		Fscan(in, &k, &a, &b)
+		if k == 1 {
+			t.update(1, a, b)
+		} else {
+			Fprintln(out, t.query(1, a, b))
 		}
 	}
-	if dist[n] == INF {
-		Fprintln(out, -1)
-	} else {
-		Fprintln(out, dist[n])
-	}
+
 }
 
 func min(a, b int) int { if a > b { return b }; return a }
