@@ -8,10 +8,11 @@ import (
 
 const (
 	N int = 1e4 + 10
+	INF int = 0x3f3f3f3f
 )
 
 var n int
-var he, e, ne, w, down, up [2*N]int
+var he, e, ne, w, d1, d2, up, p [2*N]int
 var idx = 0
 
 func add(a, b, c int) {
@@ -23,15 +24,25 @@ func add(a, b, c int) {
 }
 
 // 从上往下走
-func dfs_down(u, fa int) {
+func dfs_down(u, fa int) int {
+	d1[u], d2[u] = -INF, -INF
 	for i := he[u]; i != -1; i = ne[i] {
 		j := e[i]
 		if j == fa { continue }
 		// 往下走先算子节点的
-		dfs_down(j, u)
-		d := down[j] + w[i]
-		down[u] = max(down[u], d)
+		d := dfs_down(j, u) + w[i]
+		if d >= d1[u] {
+			d2[u] = d1[u]
+			d1[u] = d
+			p[u] = j
+		} else if d > d2[u] {
+			d2[u] = d
+		}
 	}
+	if d1[u] == -INF {
+		d1[u], d2[u] = 0, 0
+	}
+	return d1[u]
 }
 
 // 从下往上走
@@ -40,7 +51,11 @@ func dfs_up(u, fa int) {
 		j := e[i]
 		if j == fa { continue }
 		// 往上走先算自己的
-		up[j] = up[u] + w[i]
+		if p[u] == j {
+			up[j] = max(up[u], d2[u]) + w[i]
+		} else {
+			up[j] = max(up[u], d1[u]) + w[i]
+		}
 		dfs_up(j, u)
 	}
 }
@@ -68,19 +83,11 @@ func main() {
 	dfs_down(1, -1)
 	dfs_up(1, -1)
 
+	res := INF
 	for i := 1; i <= n; i++ {
-		Fprintln(out, up[i] + down[i])
+		res = min(res, max(up[i], d1[i]))
 	}
-
-	ans, idx := 0x3f3f3f3f, 0
-	for i := 1; i <= n; i++ {
-		t := up[i] + down[i]
-		if ans > t {
-			ans = t
-			idx = i
-		}
-	}
-	Fprintln(out, idx)
+	Fprintln(out, res)
 }
 
 func min(a, b int) int { if a > b { return b }; return a }

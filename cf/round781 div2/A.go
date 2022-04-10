@@ -11,6 +11,13 @@ func main() {
 	out := bufio.NewWriter(os.Stdout)
 	defer out.Flush()
 
+	var t int
+	Fscan(in, &t)
+	for ; t > 0; t-- {
+		var n int
+		Fscan(in, &n)
+		Fprintln(out, 1, n - 3, 1, 1)
+	}
 }
 
 func min(a, b int) int { if a > b { return b }; return a }

@@ -6,31 +6,35 @@ import (
 	"os"
 )
 
-func qmi(p, q, m int) int {
-	res, t := 1 % m, p
-	for q > 0 {
-		if q & 1 == 1 {
-			res = res * t % m
+const (
+	N int = 2010
+	MOD int = 1e9 + 7
+)
+var f [N][N]int
+var n int
+
+func init() {
+	for i := 0; i < N; i++ {
+		for j := 0; j <= i; j++ {
+			if j == 0 { 
+				f[i][j] = 1 
+			} else { 
+				f[i][j] = (f[i-1][j-1] + f[i-1][j]) % MOD
+			}
 		}
-		t = t * t % m
-		q >>= 1
 	}
-	return res
 }
 
 func main() {
 	in := bufio.NewReader(os.Stdin)
 	out := bufio.NewWriter(os.Stdout)
 	defer out.Flush()
-
-	var n int
 	Fscan(in, &n)
 	for ; n > 0; n-- {
-		var p, q, m int
-		Fscan(in, &p, &q, &m)
-		Fprintln(out, qmi(p, q, m))
+		var a, b int
+		Fscan(in, &a, &b)
+		Fprintln(out, f[a][b])
 	}
-
 }
 
 func min(a, b int) int { if a > b { return b }; return a }

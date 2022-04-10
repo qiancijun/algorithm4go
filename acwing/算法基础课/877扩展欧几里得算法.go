@@ -6,16 +6,14 @@ import (
 	"os"
 )
 
-func qmi(p, q, m int) int {
-	res, t := 1 % m, p
-	for q > 0 {
-		if q & 1 == 1 {
-			res = res * t % m
-		}
-		t = t * t % m
-		q >>= 1
+func exgcd(a, b int, x, y *int) int {
+	if b == 0 {
+		*x, *y = 1, 0
+		return a
 	}
-	return res
+	d := exgcd(b, a % b, y, x)
+	*y -= (a / b) * *x
+	return d
 }
 
 func main() {
@@ -25,10 +23,12 @@ func main() {
 
 	var n int
 	Fscan(in, &n)
+
 	for ; n > 0; n-- {
-		var p, q, m int
-		Fscan(in, &p, &q, &m)
-		Fprintln(out, qmi(p, q, m))
+		var a, b, x, y int
+		Fscan(in, &a, &b)
+		exgcd(a, b, &x, &y)
+		Fprintln(out, x, y)
 	}
 
 }

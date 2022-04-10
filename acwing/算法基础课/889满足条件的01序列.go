@@ -6,14 +6,14 @@ import (
 	"os"
 )
 
-func qmi(p, q, m int) int {
-	res, t := 1 % m, p
-	for q > 0 {
-		if q & 1 == 1 {
-			res = res * t % m
-		}
-		t = t * t % m
-		q >>= 1
+const MOD = 1e9 + 7
+
+func catalan(n int) int {
+	if n == 1 { return 1 }
+	if n == 2 { return 1 }
+	res := 0
+	for i := 1; i <= n - 1; i++ {
+		res += catalan(i) * catalan(n - i) % MOD
 	}
 	return res
 }
@@ -22,15 +22,9 @@ func main() {
 	in := bufio.NewReader(os.Stdin)
 	out := bufio.NewWriter(os.Stdout)
 	defer out.Flush()
-
 	var n int
 	Fscan(in, &n)
-	for ; n > 0; n-- {
-		var p, q, m int
-		Fscan(in, &p, &q, &m)
-		Fprintln(out, qmi(p, q, m))
-	}
-
+	Fprintln(out, catalan(2 * n) % MOD)
 }
 
 func min(a, b int) int { if a > b { return b }; return a }
