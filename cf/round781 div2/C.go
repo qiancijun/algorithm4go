@@ -5,6 +5,8 @@ import (
 	. "fmt"
 	"io"
 	"os"
+	"sort"
+	"container/heap"
 )
 
 const (
@@ -12,41 +14,19 @@ const (
 )
 
 func solve(in io.Reader, out io.Writer) {
-	var cnt [N]int
-	n, base, maxLen1, maxLen2 := 0, 0, 0, 0
+	var n int
 	Fscan(in, &n)
-	for i := 2; i <= n; i++ {
-		var x int
-		Fscan(in, &x)
-		if cnt[x] == 0 { base++ }
-		cnt[x]++
-		if cnt[x] > maxLen1 {
-			maxLen2 = maxLen1
-			maxLen1 = cnt[x]
-		} else if cnt[x] > maxLen2 {
-			maxLen2 = cnt[x]
-		}
+	cnt := make([]int, n+1)
+	
+	nums := make([]int, 0)
+	nums = append(nums, 1)
+	for i := 0; i < n; i++ {
+		var a int
+		Fscan(in, &a)
+		cnt[a]++
+		nums = append(nums, cnt[a])
 	}
-
-	ans := 0
-	if base >= maxLen1 { 
-		ans = base + 1 
-	} else {
-		step := (maxLen1 - base + 1) / 2
-		if base == 1 {
-			ans += step + 1 + base
-			Fprintln(out, ans)
-			return
-		}
-		if step >= maxLen2 {
-			ans += step
-		} else {
-			ans += step
-			ans += (maxLen2 - step) / 2
-		}
-		ans += (1 + base)
-	}
-	Fprintln(out, ans)
+	sort.Slice(nums, func(i, j int) bool { return nums[i] > nums[j] })
 }
 
 func main() {
