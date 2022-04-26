@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+<<<<<<< HEAD
 const (
 	N int = 1e5 + 10
 )
@@ -14,11 +15,14 @@ var (
 	s string
 )
 
+=======
+>>>>>>> 8c5717383ac412c04a5951cc62ff58eceed3bc72
 func main() {
 	in := bufio.NewReader(os.Stdin)
 	out := bufio.NewWriter(os.Stdout)
 	defer out.Flush()
 
+<<<<<<< HEAD
 	Fscan(in, &s)
 	n := 2
 	ans1, ans2 := false, false
@@ -40,6 +44,50 @@ func main() {
 		Fprintln(out, "NO")
 	}
 
+=======
+	var str string
+	Fscan(in, &str)
+	n := len(str)
+	ans1, ans2 := false, false
+	for i := 0; i + 2 <= n; i++ {
+		j := i + 2
+		substr := str[i:j]
+		if substr == "AB" && !ans1 { 
+			ans1 = true 
+			i = j - 1
+		}
+		if ans1 && substr == "BA" && !ans2 {
+			ans2 = true
+			i = j - 1
+		}
+	}
+
+	if ans1 && ans2 {
+		Fprintln(out, "YES")
+		return
+	}
+
+	ans1, ans2 = false, false
+	for i := 0; i + 2 <= n; i++ {
+		j := i + 2
+		substr := str[i:j]
+		if substr == "BA" && !ans1 { 
+			ans1 = true 
+			i = j - 1
+		}
+		if ans1 && substr == "AB" && !ans2 {
+			ans2 = true
+			i = j - 1
+		}
+	}
+
+	if ans1 && ans2 {
+		Fprintln(out, "YES")
+		return
+	}
+
+	Fprintln(out, "NO")
+>>>>>>> 8c5717383ac412c04a5951cc62ff58eceed3bc72
 }
 
 func min(a, b int) int { if a > b { return b }; return a }
